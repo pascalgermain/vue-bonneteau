@@ -6,12 +6,12 @@
       tag="ul"
     >
       <li
-        v-for="(choice, count) in choices"
-        :key="count"
+        v-for="choice in choices"
+        :key="choice"
       >
         <choice
-          :count="count"
-          :selected="count === choiceSelected"
+          :count="choice"
+          :selected="select && choice === choiceSelected"
           @input="selectChoice($event)"
         ></choice>
       </li>
@@ -21,9 +21,8 @@
       class="status"
       v-text="'You ' + status + '!!!'"
     ></div>
-    <h2>
+    <h2 v-if="status">
       <a
-        v-if="status"
         class="restart"
         href="#"
         v-text="'Restart'"
@@ -44,9 +43,11 @@ export default {
   },
   data () {
     return {
+      shufflesCount: 5,
       choicesCount: 3,
       choices: [],
       choiceSelected: null,
+      select: false,
       status: null
     }
   },
@@ -56,24 +57,39 @@ export default {
     }
   },
   mounted () {
+    for (let i = 0; i < this.choicesCount; i++) this.choices.push(i)
     this.start()
   },
   methods: {
     start () {
-      this.choices = []
       this.choiceSelected = null
+      this.select = false
       this.status = null
-      for (let i = 0; i < this.choicesCount; i++) this.choices.push(i)
       this.$http.get(this.apiUrl)
         .then(response => {
           this.choiceSelected = parseInt(response.data, 0)
-          this.choices = shuffle(this.choices)
-          console.log(this.choices)
+          this.select = true
+          setTimeout(() => {
+            this.select = false
+            setTimeout(() => {
+              this.shuffleChoices(this.shufflesCount)
+            }, 500)
+          }, 1250)
         })
         .catch(e => { console.log('error', e) })
     },
     selectChoice (count) {
+      if (this.choiceSelected === null) return
+      this.select = true
       this.status = count === this.choiceSelected ? 'win' : 'lose'
+    },
+    shuffleChoices (shufflesCount) {
+      this.choices = shuffle(this.choices)
+      if (--shufflesCount) {
+        setTimeout(() => {
+          this.shuffleChoices(shufflesCount)
+        }, 750)
+      }
     }
   }
 }
@@ -94,7 +110,7 @@ li {
 }
 
 .flip-list-move {
-  transition: transform 1s;
+  transition: transform .5s;
 }
 
 .status {
