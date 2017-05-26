@@ -1,15 +1,21 @@
 <template>
   <div class="bonneteau">
     <h1>Bonneteau</h1>
-    <ul>
-      <li v-for="(choice, index) in choices">
+    <transition-group
+      name="flip-list"
+      tag="ul"
+    >
+      <li
+        v-for="(choice, count) in choices"
+        :key="count"
+      >
         <choice
-          :count="index"
-          :selected="index === choiceSelected"
+          :count="count"
+          :selected="count === choiceSelected"
           @input="selectChoice($event)"
         ></choice>
       </li>
-    </ul>
+    </transition-group>
     <div
       v-if="status"
       class="status"
@@ -28,6 +34,7 @@
 </template>
 
 <script>
+import shuffle from 'lodash/shuffle'
 import Choice from './choice'
 
 export default {
@@ -48,7 +55,7 @@ export default {
       return `https://www.random.org/integers/?num=1&min=0&max=${this.choicesCount - 1}&col=1&base=10&format=plain&rnd=new`
     }
   },
-  created () {
+  mounted () {
     this.start()
   },
   methods: {
@@ -56,9 +63,13 @@ export default {
       this.choices = []
       this.choiceSelected = null
       this.status = null
-      for (let i = 0; i < this.choicesCount; i++) this.choices.push(0)
+      for (let i = 0; i < this.choicesCount; i++) this.choices.push(i)
       this.$http.get(this.apiUrl)
-        .then(response => { this.choiceSelected = parseInt(response.data, 0) })
+        .then(response => {
+          this.choiceSelected = parseInt(response.data, 0)
+          this.choices = shuffle(this.choices)
+          console.log(this.choices)
+        })
         .catch(e => { console.log('error', e) })
     },
     selectChoice (count) {
@@ -80,6 +91,10 @@ ul {
 
 li {
   display: inline-block;
+}
+
+.flip-list-move {
+  transition: transform 1s;
 }
 
 .status {

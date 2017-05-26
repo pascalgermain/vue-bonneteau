@@ -2,13 +2,13 @@
   <a
     :class="['choice', {selected}]"
     href="#"
+    v-html="selected ? 'O' : '&nbsp;'"
     @click.prevent="$emit('input', count)"
-  >
-    {{ count + 1 }}
-  </a>
+  ></a>
 </template>
 
 <script>
+
 export default {
   name: 'choice',
   props: {
