@@ -54,6 +54,9 @@ export default {
   computed: {
     apiUrl () {
       return `https://www.random.org/integers/?num=1&min=0&max=${this.choicesCount - 1}&col=1&base=10&format=plain&rnd=new`
+    },
+    stringChoices () {
+      return JSON.stringify(this.choices)
     }
   },
   mounted () {
@@ -84,7 +87,11 @@ export default {
       this.status = count === this.choiceSelected ? 'win' : 'lose'
     },
     shuffleChoices (shufflesCount) {
-      this.choices = shuffle(this.choices)
+      let shuffledChoices
+      do {
+        shuffledChoices = shuffle(this.choices)
+      } while (JSON.stringify(shuffledChoices) === this.stringChoices)
+      this.choices = shuffledChoices
       if (--shufflesCount) {
         setTimeout(() => {
           this.shuffleChoices(shufflesCount)
