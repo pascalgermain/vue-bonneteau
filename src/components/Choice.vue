@@ -1,9 +1,9 @@
 <template>
   <a
-    :class="['choice', {selected}]"
+    :class="{active}"
     href="#"
     v-text="'O'"
-    @click.prevent="$emit('input', count)"
+    @click.prevent="$emit('input', value)"
   ></a>
 </template>
 
@@ -11,11 +11,11 @@
 export default {
   name: 'choice',
   props: {
-    count: {
+    value: {
       type: Number,
       required: true
     },
-    selected: {
+    active: {
       type: Boolean,
       required: true
     }
@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style scoped>
-.choice {
+a {
   display: block;
   width: 120px;
   height: 120px;
@@ -42,11 +42,11 @@ export default {
   transition: all .25s ease-in-out;
 }
 
-.choice:hover {
+a:hover {
   transform: scale(1.2);
 }
 
-.choice.selected {
+a.active {
   color: yellow;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="bonneteau">
+  <div>
     <h1>Bonneteau</h1>
     <transition-group
       name="flip-list"
@@ -10,8 +10,8 @@
         :key="choice"
       >
         <choice
-          :count="choice"
-          :selected="select && choice === choiceSelected"
+          :value="choice"
+          :active="showActive && choice === activeChoice"
           @input="selectChoice($event)"
         ></choice>
       </li>
@@ -46,8 +46,8 @@ export default {
       shufflesCount: 5,
       choicesCount: 3,
       choices: [],
-      choiceSelected: null,
-      select: false,
+      activeChoice: null,
+      showActive: false,
       status: null
     }
   },
@@ -55,7 +55,7 @@ export default {
     apiUrl () {
       return `https://www.random.org/integers/?num=1&min=0&max=${this.choicesCount - 1}&col=1&base=10&format=plain&rnd=new`
     },
-    stringChoices () {
+    choicesString () {
       return JSON.stringify(this.choices)
     }
   },
@@ -65,15 +65,15 @@ export default {
   },
   methods: {
     start () {
-      this.choiceSelected = null
-      this.select = false
+      this.activeChoice = null
+      this.showActive = false
       this.status = null
       this.$http.get(this.apiUrl)
         .then(response => {
-          this.choiceSelected = parseInt(response.data, 0)
-          this.select = true
+          this.activeChoice = parseInt(response.data, 0)
+          this.showActive = true
           setTimeout(() => {
-            this.select = false
+            this.showActive = false
             setTimeout(() => {
               this.shuffleChoices(this.shufflesCount)
             }, 500)
@@ -81,22 +81,22 @@ export default {
         })
         .catch(e => { console.log('error', e) })
     },
-    selectChoice (count) {
-      if (this.choiceSelected === null) return
-      this.select = true
-      this.status = count === this.choiceSelected ? 'win' : 'lose'
-    },
     shuffleChoices (shufflesCount) {
       let shuffledChoices
       do {
         shuffledChoices = shuffle(this.choices)
-      } while (JSON.stringify(shuffledChoices) === this.stringChoices)
+      } while (JSON.stringify(shuffledChoices) === this.choicesString)
       this.choices = shuffledChoices
       if (--shufflesCount) {
         setTimeout(() => {
           this.shuffleChoices(shufflesCount)
         }, 750)
       }
+    },
+    selectChoice (choice) {
+      if (this.activeChoice === null || this.status) return
+      this.showActive = true
+      this.status = choice === this.activeChoice ? 'win' : 'lose'
     }
   }
 }
