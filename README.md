@@ -1,6 +1,8 @@
-# vue-bonneteau
+# Vue Bonneteau
 
-> A Vue.js project
+> A Vue.js Bonneteau game.
+
+> http://pascalgermain.github.io/vue-bonneteau/
 
 ## Build Setup
 
