@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A Vue.js Bonneteau game.",
   "author": "Pascal Germain <pascalgermain@me.com>",
+  "homepage": "http://pascalgermain.github.io/vue-bonneteau",
   "scripts": {
     "start": "npm run dev",
     "dev": "node build/dev-server.js",
