@@ -13,7 +13,7 @@
     </TransitionGroup>
 
     <template v-if="status">
-      <div class="status">You {{ status }}!!!'"</div>
+      <div class="status">You {{ status }}!!!</div>
       <h2>
         <a class="restart" href="#" @click.prevent="start">Restart</a>
       </h2>
