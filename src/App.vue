@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <GithubCorner url="pascalgermain/vue-bonneteau" />
+
     <img alt="Vue logo" src="./assets/logo.png" />
 
     <Bonneteau />
@@ -10,9 +12,10 @@
 import { defineComponent } from 'vue'
 
 import Bonneteau from './components/Bonneteau.vue'
+import GithubCorner from './components/GithubCorner.vue'
 
 export default defineComponent({
-  components: { Bonneteau },
+  components: { Bonneteau, GithubCorner },
 })
 </script>
 

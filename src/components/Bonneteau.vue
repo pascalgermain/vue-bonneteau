@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Vue Bonneteau</h1>
+    <h1>Bonneteau</h1>
 
     <TransitionGroup name="flip-list" tag="ul">
       <li v-for="choice in choices" :key="choice">
@@ -27,7 +27,7 @@ import shuffle from 'lodash.shuffle'
 
 import { getRandomInt, sleep } from '@/utils/common'
 
-import Choice from './Choice.vue'
+import Choice from '@/components/Choice.vue'
 
 export default defineComponent({
   components: { Choice },
@@ -97,11 +97,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-
 ul {
   list-style-type: none;
   padding: 0;
