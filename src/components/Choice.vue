@@ -1,26 +1,16 @@
 <template>
-  <a
-    :class="{active}"
-    href="#"
-    v-text="'O'"
-    @click.prevent="$emit('input', value)"
-  ></a>
+  <a :class="{ active, selectable }" href="#" @click.prevent>O</a>
 </template>
 
-<script>
-export default {
-  name: 'choice',
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   props: {
-    value: {
-      type: Number,
-      required: true
-    },
-    active: {
-      type: Boolean,
-      required: true
-    }
-  }
-}
+    active: Boolean,
+    selectable: Boolean,
+  },
+})
 </script>
 
 <style scoped>
@@ -39,10 +29,14 @@ a {
   font-weight: bold;
   text-decoration: none;
   transform: scale(1);
-  transition: all .25s ease-in-out;
+  transition: all 0.25s ease-in-out;
 }
 
-a:hover {
+a:not(.selectable) {
+  cursor: default;
+}
+
+a.selectable:hover {
   transform: scale(1.2);
 }
 

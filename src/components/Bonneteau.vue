@@ -1,109 +1,104 @@
 <template>
   <div>
-    <h1>Bonneteau</h1>
-    <transition-group
-      name="flip-list"
-      tag="ul"
-    >
-      <li
-        v-for="choice in choices"
-        :key="choice"
-      >
-        <choice
-          :value="choice"
+    <h1>Vue Bonneteau</h1>
+
+    <TransitionGroup name="flip-list" tag="ul">
+      <li v-for="choice in choices" :key="choice">
+        <Choice
           :active="showActive && choice === activeChoice"
-          @input="selectChoice($event)"
-        ></choice>
+          :selectable="selectable"
+          @click.native="selectChoice(choice)"
+        />
       </li>
-    </transition-group>
-    <div
-      v-if="status"
-      class="status"
-      v-text="'You ' + status + '!!!'"
-    ></div>
-    <h2 v-if="status">
-      <a
-        class="restart"
-        href="#"
-        v-text="'Restart'"
-        @click.prevent="start()"
-      ></a>
-    </h2>
+    </TransitionGroup>
+
+    <template v-if="status">
+      <div class="status">You {{ status }}!!!'"</div>
+      <h2>
+        <a class="restart" href="#" @click.prevent="start">Restart</a>
+      </h2>
+    </template>
   </div>
 </template>
 
-<script>
-import shuffle from 'lodash/shuffle'
-import Choice from './choice'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import shuffle from 'lodash.shuffle'
 
-export default {
-  name: 'bonneteau',
-  components: {
-    Choice
+import { getRandomInt, sleep } from '@/utils/common'
+
+import Choice from './Choice.vue'
+
+export default defineComponent({
+  components: { Choice },
+
+  props: {
+    choicesCount: { type: Number, default: 3 },
+    shufflesCount: { type: Number, default: 5 },
   },
-  data () {
+
+  data() {
     return {
-      shufflesCount: 5,
-      choicesCount: 3,
-      choices: [],
-      activeChoice: null,
+      choices: [] as number[],
+      activeChoice: null as number | null,
       showActive: false,
-      status: null
+      selectable: false,
+      status: null as 'win' | 'lose' | null,
     }
   },
+
   computed: {
-    apiUrl () {
-      return `https://www.random.org/integers/?num=1&min=0&max=${this.choicesCount - 1}&col=1&base=10&format=plain&rnd=new`
-    },
-    choicesString () {
+    choicesString(): string {
       return JSON.stringify(this.choices)
-    }
+    },
   },
-  mounted () {
+
+  mounted() {
     for (let i = 0; i < this.choicesCount; i++) this.choices.push(i)
     this.start()
   },
+
   methods: {
-    start () {
-      this.activeChoice = null
-      this.showActive = false
+    async start() {
       this.status = null
-      this.$http.get(this.apiUrl)
-        .then(response => {
-          this.activeChoice = parseInt(response.data, 0)
-          this.showActive = true
-          setTimeout(() => {
-            this.showActive = false
-            setTimeout(() => {
-              this.shuffleChoices(this.shufflesCount)
-            }, 500)
-          }, 1250)
-        })
-        .catch(e => { console.log('error', e) })
+      this.showActive = false
+      this.activeChoice = getRandomInt(this.choicesCount)
+      this.showActive = true
+      await sleep(1250)
+      this.showActive = false
+      await sleep(500)
+      this.shuffleChoices(this.shufflesCount)
     },
-    shuffleChoices (shufflesCount) {
+
+    async shuffleChoices(count: number) {
       let shuffledChoices
       do {
         shuffledChoices = shuffle(this.choices)
       } while (JSON.stringify(shuffledChoices) === this.choicesString)
       this.choices = shuffledChoices
-      if (--shufflesCount) {
-        setTimeout(() => {
-          this.shuffleChoices(shufflesCount)
-        }, 750)
+
+      if (--count) {
+        await sleep(750)
+        this.shuffleChoices(count)
+        return
       }
+
+      this.selectable = true
     },
-    selectChoice (choice) {
-      if (this.activeChoice === null || this.status) return
+
+    selectChoice(choice: number) {
+      if (!this.selectable) return
       this.showActive = true
       this.status = choice === this.activeChoice ? 'win' : 'lose'
-    }
-  }
-}
+      this.selectable = false
+    },
+  },
+})
 </script>
 
 <style scoped>
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 
@@ -117,7 +112,7 @@ li {
 }
 
 .flip-list-move {
-  transition: transform .5s;
+  transition: transform 0.5s;
 }
 
 .status {

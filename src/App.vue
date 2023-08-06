@@ -1,19 +1,19 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <bonneteau></bonneteau>
+    <img alt="Vue logo" src="./assets/logo.png" />
+
+    <Bonneteau />
   </div>
 </template>
 
-<script>
-import Bonneteau from './components/Bonneteau'
+<script lang="ts">
+import { defineComponent } from 'vue'
 
-export default {
-  name: 'app',
-  components: {
-    Bonneteau
-  }
-}
+import Bonneteau from './components/Bonneteau.vue'
+
+export default defineComponent({
+  components: { Bonneteau },
+})
 </script>
 
 <style>
@@ -22,7 +22,7 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
+  text-align: center;
 }
 </style>
